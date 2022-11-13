@@ -2,6 +2,7 @@ package az.company.security.controller;
 
 import az.company.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,9 +18,11 @@ public class AuthController {
 
     @PostMapping
     public ResponseEntity<String> generateToken(Authentication authentication) {
-        return new ResponseEntity<>(
-                tokenService.generateToken(authentication),
-                HttpStatus.CREATED
-        );
+        HttpHeaders responseHeaders = new HttpHeaders();
+        String token = tokenService.generateToken(authentication);
+        responseHeaders.add("Bearer", token);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .headers(responseHeaders)
+                .body("New Bearer token is generated and added to the Headers!");
     }
 }
